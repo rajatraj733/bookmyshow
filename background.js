@@ -33,4 +33,4 @@ redisClient.on('ready', function (res) {
 
     scrap();
     setInterval(scrap, constants.timeInterval);
-}
+});
