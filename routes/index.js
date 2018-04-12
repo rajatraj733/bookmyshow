@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
     });
     redisClient.on('ready', function (resp) {
       let response = '';
-        redisClient.get('stauts', (err, result1)=> {
+        redisClient.get('status', (err, result1)=> {
             if(err) {
                 console.error(err);
                 return;
