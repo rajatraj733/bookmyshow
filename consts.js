@@ -10,7 +10,10 @@ var constants = {
     },
     email: {
         username: 'rajatraj733@gmail.com',
-        password: 'zqnxadnubifnmybv'
+        password: 'zqnxadnubifnmybv',
+        recipient: 'rajatraj733@gmail.com',
+        subject: 'Book Ticket',
+        text: 'Do it fast at '
     }
 };
 module.exports = constants;

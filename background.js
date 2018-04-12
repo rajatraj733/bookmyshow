@@ -2,6 +2,7 @@ var constants = require('./consts');
 var axios = require('axios');
 const cheerio = require('cheerio');
 const redis = require('redis');
+var email = require('./email');
 
 var redisClient = redis.createClient({
     host: constants.redis.url, port: constants.redis.port
@@ -26,6 +27,7 @@ redisClient.on('ready', function (res) {
                 redisClient.set('chennaiPageLastUpdated', time);
                 if(result !== oldResult) {
                     console.log('IPL Page: book it');
+                    email.sendMail(constants.email.recipient, constants.email.subject, constants.email.text+': '+constants.chennaiPageUrl);
                 } else {
                     console.log('IPL Page: don\'t book it');
                 }
@@ -49,6 +51,7 @@ redisClient.on('ready', function (res) {
                 redisClient.set('iplPageLastUpdated', time);
                 if(value !== oldResult) {
                     console.log('IPL Page: book it');
+                    email.sendMail(constants.email.recipient, constants.email.subject, constants.email.text+': '+constants.iplPageUrl);
                 } else {
                     console.log('IPL Page: don\'t book it');
                 }

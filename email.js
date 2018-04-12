@@ -9,17 +9,22 @@ var transporter = nodemailer.createTransport({
     }
 });
 
-var mailOptions = {
-    from: constants.email.username,
-    to: 'rajatraj733@gmail.com',
-    subject: 'Sending Email using Node.js from droplet',
-    text: 'That was easy!'
-};
 
-transporter.sendMail(mailOptions, function(error, info){
-    if (error) {
-        console.log(error);
-    } else {
-        console.log('Email sent: ' + info.response);
-    }
-});
+
+
+const sendMail = (recipient, subject, txt) => {
+    let mailOptions = {
+        from: constants.email.username,
+        to: recipient,
+        subject: subject,
+        text: txt
+    };
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+}
+module.exports.sendMail = sendMail;
