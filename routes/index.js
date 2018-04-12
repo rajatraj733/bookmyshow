@@ -10,22 +10,35 @@ router.get('/', function(req, res, next) {
         host: constants.redis.url, port: constants.redis.port
     });
     redisClient.on('ready', function (resp) {
-      let response = '';
-        redisClient.get('status', (err, result1)=> {
+      let response = 'Chennai Page: ';
+        redisClient.get('chennaiPageLastUpdated', (err, chennaiTime)=> {
             if(err) {
                 console.error(err);
                 return;
             }
-            console.log(new Date()+' serving status');
-            response += result1;
-            redisClient.get('bookingStatus', (err, result2)=> {
+            response += chennaiTime+': ';
+            redisClient.get('chennaiPageStatus', (err, chennaiPageStatus)=> {
                 if(err) {
                     console.error(err);
                     return;
                 }
-                console.log(new Date()+' serving bookingStatus');
-                response += ' '+result2;
-                res.send(response);
+                response += chennaiPageStatus+'<br>';
+                redisClient.get('iplPageLastUpdated', (err, iplTime) => {
+                    if(err) {
+                        console.error(err);
+                        return;
+                    }
+                    response += 'IPL Page: '+iplTime+': ';
+                    redisClient.get('iplPageStatus', (err, iplPageStatus) => {
+                        if(err) {
+                            console.error(err);
+                            return;
+                        }
+                        response += iplPageStatus;
+                        console.log(new Date() + response);
+                        res.send(response);
+                    });
+                })
             });
         });
 

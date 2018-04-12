@@ -11,26 +11,53 @@ var redisClient = redis.createClient({
 redisClient.on('ready', function (res) {
     console.log('client ready');
     let oldResult = 'Coming Soon';
-    function scrap() {
-        console.log('running');
-        axios.get(constants.url)
+    function scrapChennaiPage() {
+        console.log('Chennai Page: running');
+        axios.get(constants.chennaiPageUrl)
             .then((response) => {
                 // console.log(response.data);
                 const $ = cheerio.load(response.data);
                 let node = $('.events-main-cards').eq(1);
+                // console.log(node.html());
                 let mainNode = $('.cards-book-button', node);
                 let result = mainNode.text().trim();
-                console.log('result: '+result);
+                const time = new Date().toLocaleTimeString();
+                console.log('Chennai Page: '+time+': result: '+result);
+                redisClient.set('chennaiPageLastUpdated', time);
                 if(result !== oldResult) {
-                    redisClient.set('bookingStatus', 'Book it');
+                    console.log('IPL Page: book it');
                 } else {
-                    redisClient.set('bookingStatus', 'Don\'t book it');
+                    console.log('IPL Page: don\'t book it');
                 }
-                redisClient.set('status', result);
+                redisClient.set('chennaiPageStatus', result);
 
-            });
+            }).catch(e => {
+                console.error(e);
+        });
+    }
+    function scrapIPLPage() {
+        console.log('IPL Page: running');
+        let oldResult = 'Coming Soon';
+        axios.get(constants.iplPageUrl)
+            .then(response => {
+                const $ = cheerio.load(response.data);
+                let card = $('._chennai');
+                let button = $('.__buyBtn', card);
+                let value = button.text().trim();
+                const time = new Date().toLocaleTimeString();
+                console.log('IPL Page: '+time+': result: '+value);
+                redisClient.set('iplPageLastUpdated', time);
+                if(value !== oldResult) {
+                    console.log('IPL Page: book it');
+                } else {
+                    console.log('IPL Page: don\'t book it');
+                }
+                redisClient.set('iplPageStatus', value);
+            }).catch(e => {console.error(e);});
     }
 
-    scrap();
-    setInterval(scrap, constants.timeInterval);
+    scrapChennaiPage();
+    scrapIPLPage();
+    setInterval(scrapChennaiPage, constants.timeInterval);
+    setInterval(scrapIPLPage, constants.timeInterval);
 });
