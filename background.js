@@ -29,7 +29,7 @@ redisClient.on('ready', function (res) {
                     console.log('IPL Page: book it');
                     email.sendMail(constants.email.recipient, constants.email.subject, constants.email.text+': '+constants.chennaiPageUrl);
                 } else {
-                    console.log('IPL Page: don\'t book it');
+                    console.log('Chennai Page: don\'t book it');
                 }
                 redisClient.set('chennaiPageStatus', result);
 
