@@ -7,6 +7,10 @@ var constants = {
     redis : {
         url: 'localhost',
         port: 6379
+    },
+    email: {
+        username: 'rajatraj733@gmail.com',
+        password: 'zqnxadnubifnmybv'
     }
 };
 module.exports = constants;
