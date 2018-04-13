@@ -12,6 +12,7 @@ var redisClient = redis.createClient({
 redisClient.on('ready', function (res) {
     console.log('client ready');
     let oldResult = 'Coming Soon';
+
     function scrapChennaiPage() {
         console.log('Chennai Page: running');
         axios.get(constants.chennaiPageUrl)
@@ -23,15 +24,16 @@ redisClient.on('ready', function (res) {
                 let mainNode = $('.cards-book-button', node);
                 let result = mainNode.text().trim();
                 const time = constants.getCurrentIST();
-                console.log('Chennai Page: '+time+': result: '+result);
+                console.log('Chennai Page: ' + time + ': result: ' + result);
                 redisClient.set('chennaiPageLastUpdated', time);
-                if(result !== oldResult) {
+                if (result !== oldResult) {
                     console.log('IPL Page: book it');
-                    email.sendMail(constants.email.recipient, constants.email.subject, constants.email.text+': '+constants.chennaiPageUrl)
+                    email.sendMail(constants.email.recipient, constants.email.subject, constants.email.text + ': ' + constants.chennaiPageUrl)
                         .then(res => {
                             console.log('mail sent');
                         }).catch(e => {
-                            console.log('could not send mail');
+                        console.log('could not send mail');
+                        sendMailOnError(JSON.stringify(e));
                     });
                 } else {
                     console.log('Chennai Page: don\'t book it');
@@ -39,9 +41,10 @@ redisClient.on('ready', function (res) {
                 redisClient.set('chennaiPageStatus', result);
 
             }).catch(e => {
-                console.error(e);
+            console.error(e);
         });
     }
+
     function scrapIPLPage() {
         console.log('IPL Page: running');
         let oldResult = 'Coming Soon';
@@ -52,11 +55,11 @@ redisClient.on('ready', function (res) {
                 let button = $('.__buyBtn', card);
                 let value = button.text().trim();
                 const time = constants.getCurrentIST();
-                console.log('IPL Page: '+time+': result: '+value);
+                console.log('IPL Page: ' + time + ': result: ' + value);
                 redisClient.set('iplPageLastUpdated', time);
-                if(value !== oldResult) {
+                if (value !== oldResult) {
                     console.log('IPL Page: book it');
-                    email.sendMail(constants.email.recipient, constants.email.subject, constants.email.text+': '+constants.iplPageUrl)
+                    email.sendMail(constants.email.recipient, constants.email.subject, constants.email.text + ': ' + constants.iplPageUrl)
                         .then(res => {
                             console.log('mail sent');
                         }).catch(e => {
@@ -66,7 +69,20 @@ redisClient.on('ready', function (res) {
                     console.log('IPL Page: don\'t book it');
                 }
                 redisClient.set('iplPageStatus', value);
-            }).catch(e => {console.error(e);});
+            }).catch(e => {
+            console.error(e);
+            sendMailOnError(JSON.stringify(e));
+        });
+    }
+
+    function sendMailOnError(response) {
+        email.sendMail(constants.email.recipient, 'Error Occured, please look at this', response).then(
+            res => {
+                console.log('mail sent');
+            }
+        ).catch(e => {
+            console.log('could not send mail');
+        })
     }
 
     scrapChennaiPage();
