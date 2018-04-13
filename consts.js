@@ -1,4 +1,5 @@
-
+var moment = require('moment');
+var momenttz = require('moment-timezone');
 
 var constants = {
     timeInterval: 600000,
@@ -14,6 +15,10 @@ var constants = {
         recipient: 'rajatraj733@gmail.com',
         subject: 'Book Ticket',
         text: 'Do it fast at '
+    },
+    getCurrentIST: () => {
+        return momenttz.tz(moment(), 'Asia/Kolkata').format('HH:mm:ss');
     }
 };
+// console.log(constants.getCurrentIST());
 module.exports = constants;

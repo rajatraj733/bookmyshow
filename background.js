@@ -22,12 +22,17 @@ redisClient.on('ready', function (res) {
                 // console.log(node.html());
                 let mainNode = $('.cards-book-button', node);
                 let result = mainNode.text().trim();
-                const time = new Date().toLocaleTimeString();
+                const time = constants.getCurrentIST();
                 console.log('Chennai Page: '+time+': result: '+result);
                 redisClient.set('chennaiPageLastUpdated', time);
                 if(result !== oldResult) {
                     console.log('IPL Page: book it');
-                    email.sendMail(constants.email.recipient, constants.email.subject, constants.email.text+': '+constants.chennaiPageUrl);
+                    email.sendMail(constants.email.recipient, constants.email.subject, constants.email.text+': '+constants.chennaiPageUrl)
+                        .then(res => {
+                            console.log('mail sent');
+                        }).catch(e => {
+                            console.log('could not send mail');
+                    });
                 } else {
                     console.log('Chennai Page: don\'t book it');
                 }
@@ -46,12 +51,17 @@ redisClient.on('ready', function (res) {
                 let card = $('._chennai');
                 let button = $('.__buyBtn', card);
                 let value = button.text().trim();
-                const time = new Date().toLocaleTimeString();
+                const time = constants.getCurrentIST();
                 console.log('IPL Page: '+time+': result: '+value);
                 redisClient.set('iplPageLastUpdated', time);
                 if(value !== oldResult) {
                     console.log('IPL Page: book it');
-                    email.sendMail(constants.email.recipient, constants.email.subject, constants.email.text+': '+constants.iplPageUrl);
+                    email.sendMail(constants.email.recipient, constants.email.subject, constants.email.text+': '+constants.iplPageUrl)
+                        .then(res => {
+                            console.log('mail sent');
+                        }).catch(e => {
+                        console.log('could not send mail');
+                    });
                 } else {
                     console.log('IPL Page: don\'t book it');
                 }

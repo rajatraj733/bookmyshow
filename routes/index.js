@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const redis = require('redis');
 var constants = require('../consts');
+const email = require('../email');
 
 
 /* GET home page. */
@@ -43,6 +44,19 @@ router.get('/', function(req, res, next) {
         });
 
     });
+});
+
+router.get('/mail', (req, res) => {
+    const recipient = req.query.recipient;
+    email.sendMail(recipient, 'Demo Mail', 'Got this?')
+        .then(response => {
+        res.send(response);
+    }).catch(
+        e => {
+            res.send(e);
+        }
+    )
+    ;
 });
 
 module.exports = router;
