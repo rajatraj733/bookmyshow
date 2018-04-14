@@ -35,11 +35,25 @@ router.get('/', function(req, res, next) {
                             console.error(err);
                             return;
                         }
-                        response += iplPageStatus;
-                        console.log(new Date() + response);
-                        res.send(response);
+                        response += iplPageStatus+'<br>';
+                        redisClient.get('mumbaiPageLastUpdated', (err, mumbaiPageLastUpdated) => {
+                            if(err) {
+                                console.error(err);
+                                return;
+                            }
+                            response += 'Mumbai Page: '+mumbaiPageLastUpdated+': ';
+                            redisClient.get('mumbaiPageStatus', (err, mumbaiPageStatus) => {
+                                if(err) {
+                                    console.error(err);
+                                    return;
+                                }
+                                response += mumbaiPageStatus;
+                                res.send(response);
+                            });
+                        });
+
                     });
-                })
+                });
             });
         });
 

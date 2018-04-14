@@ -75,6 +75,39 @@ redisClient.on('ready', function (res) {
         });
     }
 
+    function scrapMumbaiPage() {
+        console.log('Mumbai Page: running');
+        let oldResult = 'Coming Soon';
+        axios.get(constants.mumbaiPageUrl)
+            .then((response) => {
+                // console.log(response.data);
+                const $ = cheerio.load(response.data);
+                let node = $('.book-button');
+                // console.log(node.html());
+                let mainNode = $('button', node);
+                let result = mainNode.text().trim();
+                const time = constants.getCurrentIST();
+                console.log('Mumbai Page: ' + time + ': result: ' + result);
+                redisClient.set('mumbaiPageLastUpdated', time);
+                if (result !== oldResult) {
+                    console.log('Mumbai Page: book it');
+                    email.sendMail(constants.email.recipient, constants.email.subject, constants.email.text + ': ' + constants.mumbaiPageUrl)
+                        .then(res => {
+                            console.log('mail sent');
+                        }).catch(e => {
+                        console.log('could not send mail');
+                        sendMailOnError(JSON.stringify(e));
+                    });
+                } else {
+                    console.log('Mumbai Page: don\'t book it');
+                }
+                redisClient.set('mumbaiPageStatus', result);
+
+            }).catch(e => {
+            console.error(e);
+        });
+    }
+
     function sendMailOnError(response) {
         email.sendMail(constants.email.recipient, 'Error Occured, please look at this', response).then(
             res => {
@@ -85,8 +118,10 @@ redisClient.on('ready', function (res) {
         })
     }
 
-    scrapChennaiPage();
+    // scrapChennaiPage();
     scrapIPLPage();
-    setInterval(scrapChennaiPage, constants.timeInterval);
+    scrapMumbaiPage();
+    // setInterval(scrapChennaiPage, constants.timeInterval);
     setInterval(scrapIPLPage, constants.timeInterval);
+    setInterval(scrapMumbaiPage, constants.timeInterval);
 });
