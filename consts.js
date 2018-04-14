@@ -13,7 +13,7 @@ var constants = {
     email: {
         username: 'rajatraj733@gmail.com',
         password: 'zqnxadnubifnmybv',
-        recipient: 'rajatraj733@gmail.com',
+        recipient: 'rajatraj733@gmail.com,cprakash.chaturvedy@gmail.com',
         subject: 'Book Ticket',
         text: 'Do it fast at '
     },
