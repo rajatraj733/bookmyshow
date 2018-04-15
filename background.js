@@ -15,10 +15,13 @@ redisClient.on('ready', function (res) {
 
     function scrapChennaiPage() {
         console.log('Chennai Page: running');
+        const time = constants.getCurrentIST();
+        redisClient.set('chennaiPageLastUpdated', time);
         axios.get(constants.chennaiPageUrl)
             .then((response) => {
+                redisClient.set('chennaiPageOnStatus', 'Working');
                 // console.log(response.data);
-                email.sendMail(constants.email.recipient, constants.email.subject,  + 'This page is on : ' + constants.chennaiPageUrl)
+                email.sendMail(constants.email.recipient, constants.email.subject, +'This page is on : ' + constants.chennaiPageUrl)
                     .then(res => {
                         console.log('mail sent');
                     }).catch(e => {
@@ -30,9 +33,9 @@ redisClient.on('ready', function (res) {
                 // console.log(node.html());
                 let mainNode = $('.cards-book-button', node);
                 let result = mainNode.text().trim();
-                const time = constants.getCurrentIST();
+
                 console.log('Chennai Page: ' + time + ': result: ' + result);
-                redisClient.set('chennaiPageLastUpdated', time);
+
                 if (result !== oldResult) {
                     console.log('IPL Page: book it');
                     email.sendMail(constants.email.recipient, constants.email.subject, constants.email.text + ': ' + constants.chennaiPageUrl)
@@ -40,7 +43,6 @@ redisClient.on('ready', function (res) {
                             console.log('mail sent');
                         }).catch(e => {
                         console.log('could not send mail');
-                        sendMailOnError(JSON.stringify(e));
                     });
                 } else {
                     console.log('Chennai Page: don\'t book it');
@@ -49,6 +51,7 @@ redisClient.on('ready', function (res) {
 
             }).catch(e => {
             console.error(e);
+            redisClient.set('chennaiPageOnStatus', 'Not Working');
         });
     }
 
@@ -77,6 +80,7 @@ redisClient.on('ready', function (res) {
                 }
                 redisClient.set('iplPageStatus', value);
             }).catch(e => {
+
             console.error(e);
             sendMailOnError(JSON.stringify(e));
         });
@@ -88,12 +92,11 @@ redisClient.on('ready', function (res) {
         axios.get(constants.mumbaiPageUrl)
             .then((response) => {
                 // console.log(response.data);
-                email.sendMail(constants.email.recipient, constants.email.subject,  + 'This page is on : ' + constants.chennaiPageUrl)
+                email.sendMail(constants.email.recipient, constants.email.subject, +'This page is on : ' + constants.chennaiPageUrl)
                     .then(res => {
                         console.log('mail sent');
                     }).catch(e => {
                     console.log('could not send mail');
-                    sendMailOnError(JSON.stringify(e));
                 });
                 const $ = cheerio.load(response.data);
                 let node = $('.book-button');
@@ -110,7 +113,6 @@ redisClient.on('ready', function (res) {
                             console.log('mail sent');
                         }).catch(e => {
                         console.log('could not send mail');
-                        sendMailOnError(JSON.stringify(e));
                     });
                 } else {
                     console.log('Mumbai Page: don\'t book it');
