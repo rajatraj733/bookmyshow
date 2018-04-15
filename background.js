@@ -18,6 +18,13 @@ redisClient.on('ready', function (res) {
         axios.get(constants.chennaiPageUrl)
             .then((response) => {
                 // console.log(response.data);
+                email.sendMail(constants.email.recipient, constants.email.subject,  + 'This page is on : ' + constants.chennaiPageUrl)
+                    .then(res => {
+                        console.log('mail sent');
+                    }).catch(e => {
+                    console.log('could not send mail');
+                    sendMailOnError(JSON.stringify(e));
+                });
                 const $ = cheerio.load(response.data);
                 let node = $('.events-main-cards').eq(1);
                 // console.log(node.html());
@@ -81,6 +88,13 @@ redisClient.on('ready', function (res) {
         axios.get(constants.mumbaiPageUrl)
             .then((response) => {
                 // console.log(response.data);
+                email.sendMail(constants.email.recipient, constants.email.subject,  + 'This page is on : ' + constants.chennaiPageUrl)
+                    .then(res => {
+                        console.log('mail sent');
+                    }).catch(e => {
+                    console.log('could not send mail');
+                    sendMailOnError(JSON.stringify(e));
+                });
                 const $ = cheerio.load(response.data);
                 let node = $('.book-button');
                 // console.log(node.html());
@@ -118,10 +132,10 @@ redisClient.on('ready', function (res) {
         })
     }
 
-    // scrapChennaiPage();
-    scrapIPLPage();
+    scrapChennaiPage();
+    // scrapIPLPage();
     scrapMumbaiPage();
-    // setInterval(scrapChennaiPage, constants.timeInterval);
-    setInterval(scrapIPLPage, constants.timeInterval);
+    setInterval(scrapChennaiPage, constants.timeInterval);
+    // setInterval(scrapIPLPage, constants.timeInterval);
     setInterval(scrapMumbaiPage, constants.timeInterval);
 });
