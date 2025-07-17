@@ -21,7 +21,11 @@ redisClient.on('ready', function (res) {
             .then((response) => {
                 redisClient.set('chennaiPageOnStatus', 'Working');
                 // console.log(response.data);
-                email.sendMail(constants.email.recipient, constants.email.subject, +'This page is on : ' + constants.chennaiPageUrl)
+                email.sendMail(
+                    constants.email.recipient,
+                    constants.email.subject,
+                    'This page is on : ' + constants.chennaiPageUrl
+                )
                     .then(res => {
                         console.log('mail sent');
                     }).catch(e => {
@@ -92,7 +96,11 @@ redisClient.on('ready', function (res) {
         axios.get(constants.mumbaiPageUrl)
             .then((response) => {
                 // console.log(response.data);
-                email.sendMail(constants.email.recipient, constants.email.subject, +'This page is on : ' + constants.chennaiPageUrl)
+                email.sendMail(
+                    constants.email.recipient,
+                    constants.email.subject,
+                    'This page is on : ' + constants.mumbaiPageUrl
+                )
                     .then(res => {
                         console.log('mail sent');
                     }).catch(e => {
